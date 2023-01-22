@@ -13,37 +13,36 @@ public class BarberoDormilon {
 	
 	public static void main (String a[]) throws InterruptedException {	
 		
-		int Barberos=2, customerId=1, numeroDeClientes=100, numSillas;	//initializing the number of barber and customers
+		int Barberos=2, customerId=1, numeroDeClientes=100, numSillas;
 		
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("Cuantos barberos hay?:");			//input M barbers
+		System.out.println("Cuantos barberos hay?:");
     	Barberos=sc.nextInt();
     	
-    	System.out.println("Cuantas sillas hay?"			//input N waiting chairs
+    	System.out.println("Cuantas sillas hay?"
     			+ " chairs(N):");
     	numSillas=sc.nextInt();
     	
-//    	System.out.println("Enter the number of customers:");			//inout the number of customers for the shop
-//    	numeroDeClientes=sc.nextInt();
+
     	
-		ExecutorService exec = Executors.newFixedThreadPool(12);		//initializing with 12 threads as multiple of cores in the CPU, here 6
-    	Tienda shop = new Tienda(Barberos, numSillas);				//initializing the barber shop with the number of barbers
-    	Random r = new Random();  										//a random number to calculate delays for customer arrivals and haircut
+		ExecutorService exec = Executors.newFixedThreadPool(12);
+    	Tienda shop = new Tienda(Barberos, numSillas);
+    	Random r = new Random();
        	    	
         System.out.println("\nTienda abierta con "
         		+Barberos+" barbero(s)\n");
         
-        long startTime  = System.currentTimeMillis();					//start time of program
+        long startTime  = System.currentTimeMillis();
         
-        for(int i=1; i<=Barberos;i++) {								//generating the specified number of threads for barber
+        for(int i=1; i<=Barberos;i++) {
         	
         	Barbero barber = new Barbero(shop, i);
         	Thread thbarber = new Thread(barber);
             exec.execute(thbarber);
         }
         
-        for(int i=0;i<numeroDeClientes;i++) {								//customer generator; generating customer threads
+        for(int i=0;i<numeroDeClientes;i++) {
         
             Cliente customer = new Cliente(shop);
             customer.setInTime(new Date());
@@ -53,9 +52,9 @@ public class BarberoDormilon {
             
             try {
             	
-            	double val = r.nextGaussian() * 2000 + 2000;			//'r':object of Random class, nextGaussian() generates a number with mean 2000 and
-            	int millisDelay = Math.abs((int) Math.round(val));		//standard deviation as 2000, thus customers arrive at mean of 2000 milliseconds
-            	Thread.sleep(millisDelay);								//and standard deviation of 2000 milliseconds
+            	double val = r.nextGaussian() * 2000 + 2000;
+            	int millisDelay = Math.abs((int) Math.round(val));
+            	Thread.sleep(millisDelay);
             }
             catch(InterruptedException iex) {
             
@@ -64,8 +63,8 @@ public class BarberoDormilon {
             
         }
         
-        exec.shutdown();												//shuts down the executor service and frees all the resources
-        exec.awaitTermination(12, SECONDS);								//waits for 12 seconds until all the threads finish their execution
+        exec.shutdown();
+        exec.awaitTermination(12, SECONDS);
  
         long elapsedTime = System.currentTimeMillis() - startTime;
         
@@ -84,7 +83,7 @@ public class BarberoDormilon {
     }
 }
  
-class Barbero implements Runnable {										// initializing the barber
+class Barbero implements Runnable {
 
     Tienda shop;
     int barberId;
@@ -132,11 +131,11 @@ class Cliente implements Runnable {
         this.inTime = inTime;
     }
  
-    public void run() {													//customer thread goes to the shop for the haircut
+    public void run() {
     
         quierenCortarseElPelo();
     }
-    private synchronized void quierenCortarseElPelo() {							//customer is added to the list
+    private synchronized void quierenCortarseElPelo() {
     
         shop.add(this);
     }
@@ -153,9 +152,9 @@ class Tienda {
     
     public Tienda(int numeroDeBarberos, int numeroDeSillas){
     
-        this.sillas = numeroDeSillas;														//number of chairs in the waiting room
-        listClientes = new LinkedList<Cliente>();						//list to store the arriving customers
-        this.barberos = numeroDeBarberos;									//initializing the total number of barbers
+        this.sillas = numeroDeSillas;
+        listClientes = new LinkedList<Cliente>();
+        this.barberos = numeroDeBarberos;
         barberosDisponibles = numeroDeBarberos;
     }
  
@@ -174,8 +173,8 @@ class Tienda {
     public void cortarPelo(int barberoId)
     {
         Cliente customer;
-        synchronized (listClientes) {									//listCustomer is a shared resource so it has been synchronized to avoid any
-        															 	//unexpected errors in the list when multiple threads access it
+        synchronized (listClientes) {
+
             while(listClientes.size()==0) {
             
                 System.out.println("\nEl Barbero "+barberoId+" esta esperando "
@@ -183,7 +182,7 @@ class Tienda {
                 
                 try {
                 
-                    listClientes.wait();								//barber sleeps if there are no customers in the shop
+                    listClientes.wait();
                 }
                 catch(InterruptedException iex) {
                 
@@ -191,7 +190,7 @@ class Tienda {
                 }
             }
             
-            customer = (Cliente)((LinkedList<?>) listClientes).poll();	//takes the first customer from the head of the list for haircut
+            customer = (Cliente)((LinkedList<?>) listClientes).poll();
             
             System.out.println("El Cliente "+customer.getClienteId()+
             		" busca al barbero dormido y si lo esta lo despierta, el cliente "+customer.getClienteId()+" ha despertado al "
@@ -202,13 +201,13 @@ class Tienda {
                 
         try {
         	
-        	barberosDisponibles--; 										//decreases the count of the available barbers as one of them starts
-        																//cutting hair of the customer and the customer sleeps
+        	barberosDisponibles--;
+
             System.out.println("El Barbero "+barberoId+" esta cortando al cliente "+
             		customer.getClienteId()+ " por lo tanto si entra un cliente tendra que esperar");
         	
-            double val = r.nextGaussian() * 2000 + 4000;				//time taken to cut the customer's hair has a mean of 4000 milliseconds and
-        	millisDelay = Math.abs((int) Math.round(val));				//and standard deviation of 2000 milliseconds
+            double val = r.nextGaussian() * 2000 + 4000;
+        	millisDelay = Math.abs((int) Math.round(val));
         	Thread.sleep(millisDelay);
         	
         	System.out.println("\nSe ha completado el corte de pelo del cliente "+
@@ -216,14 +215,14 @@ class Tienda {
         			barberoId +" en "+millisDelay+ " millisegundos.");
         
         	totalCortesDePelo.incrementAndGet();
-            															//exits through the door
+
             if(listClientes.size()>0) {
-            	System.out.println("El Barbero "+barberoId+					//barber finds a sleeping customer in the waiting room, wakes him up and
-            			" avisa al o los cliente que esta esperando en "					//and then goes to his chair and sleeps until a customer arrives
+            	System.out.println("El Barbero "+barberoId+
+            			" avisa al o los cliente que esta esperando en "
             			+ "la sala de espera y duerme hasta que llegue un cliente de fuera de la tienda o de la sala de espera");
             }
             
-            barberosDisponibles++;											//barber is available for haircut for the next customer
+            barberosDisponibles++;
         }
         catch(InterruptedException iex) {
         
@@ -240,7 +239,7 @@ class Tienda {
  
         synchronized (listClientes) {
         
-            if(listClientes.size() == sillas) {							//No chairs are available for the customer so the customer leaves the shop
+            if(listClientes.size() == sillas) {
             
                 System.out.println("\nNo hay sillas disponibles "
                 		+ "para el cliente "+customer.getClienteId()+
@@ -250,13 +249,13 @@ class Tienda {
                 
                 return;
             }
-            else if (barberosDisponibles > 0) {							//If barber is available then the customer wakes up the barber and sits in
-            															//the chair
+            else if (barberosDisponibles > 0) {
+
             	((LinkedList<Cliente>) listClientes).offer(customer);
 				listClientes.notify();
 			}
-            else {														//If barbers are busy and there are chairs in the waiting room then the customer
-            															//sits on the chair in the waiting room
+            else {
+
             	((LinkedList<Cliente>) listClientes).offer(customer);
                 
             	System.out.println("Todos los barberos estan ocupados asi que el cliente "+
