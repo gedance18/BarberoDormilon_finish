@@ -115,7 +115,7 @@ class Cliente implements Runnable {
         this.shop = shop;
     }
  
-    public int getClienteId() {										//getter and setter methods
+    public int getClienteId() {
         return clienteId;
     }
  
