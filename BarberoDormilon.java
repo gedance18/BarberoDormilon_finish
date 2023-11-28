@@ -11,8 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BarberoDormilon {
 	
-	public static void main (String a[]) throws InterruptedException {	
-		
+	public static void main (String a[]) throws InterruptedException {
+
+        // Paso 1: Entrada de Usuario
 		int Barberos=2, customerId=1, numeroDeClientes=100, numSillas;
 		
 		Scanner sc = new Scanner(System.in);
@@ -23,9 +24,9 @@ public class BarberoDormilon {
     	System.out.println("Cuantas sillas hay?"
     			+ " chairs(N):");
     	numSillas=sc.nextInt();
-    	
 
-    	
+
+        // Paso 2: Configuración Inicial
 		ExecutorService exec = Executors.newFixedThreadPool(12);
     	Tienda shop = new Tienda(Barberos, numSillas);
     	Random r = new Random();
@@ -34,14 +35,16 @@ public class BarberoDormilon {
         		+Barberos+" barbero(s)\n");
         
         long startTime  = System.currentTimeMillis();
-        
+
+        // Paso 3: Creación de Threads de Barberos
         for(int i=1; i<=Barberos;i++) {
         	
         	Barbero barber = new Barbero(shop, i);
         	Thread thbarber = new Thread(barber);
             exec.execute(thbarber);
         }
-        
+
+        // Paso 4: Creación de Threads de Clientes
         for(int i=0;i<numeroDeClientes;i++) {
         
             Cliente customer = new Cliente(shop);
@@ -62,12 +65,14 @@ public class BarberoDormilon {
             }
             
         }
-        
+
+        // Paso 5: Finalización de la Simulación
         exec.shutdown();
         exec.awaitTermination(12, SECONDS);
- 
+
+
+        // Paso 6: Cálculo de Estadísticas y Tiempo Total
         long elapsedTime = System.currentTimeMillis() - startTime;
-        
         System.out.println("\nTienda cerrada");
         System.out.println("\nTiempo total transcurrido en segundos"
         		+ " para servir a "+numeroDeClientes+" clientes por "
@@ -78,9 +83,13 @@ public class BarberoDormilon {
         System.out.println("\nTotal de clientes: "+numeroDeClientes+
         		"\nTotal de clientes que se cortan el pelo: "+shop.getTotalCortesDePelo()
         		+"\nTotal de clientes perdidos: "+shop.getClientesPerdidos());
-               
+
+        // Paso 7: Cierre del Programa
         sc.close();
     }
+
+    // Paso 8: Ejecución Continua de Threads de Barberos
+    // Los Threads de barbero siguen ejecutándose en un bucle infinito.
 }
  
 class Barbero implements Runnable {
@@ -218,8 +227,8 @@ class Tienda {
 
             if(listClientes.size()>0) {
             	System.out.println("El Barbero "+barberoId+
-            			" avisa al o los cliente que esta esperando en "
-            			+ "la sala de espera y duerme hasta que llegue un cliente de fuera de la tienda o de la sala de espera");
+            			" avisa al o los cliente que estan esperando "
+            			+ "y duerme hasta que llegue un cliente de fuera de la tienda o de la sala de espera");
             }
             
             barberosDisponibles++;
